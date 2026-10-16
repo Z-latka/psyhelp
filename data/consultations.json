@@ -1,0 +1,58 @@
+[
+  {
+    "id": 1,
+    "title": "Сильное волнение перед сессией",
+    "nickname": "Тихий_лес",
+    "category": "study",
+    "format": "chat",
+    "age": 19,
+    "anxietyLevel": 7,
+    "duration": 45,
+    "description": "Последние две недели плохо сплю, постоянно думаю об экзаменах и боюсь не сдать. Хочу научиться справляться с волнением.",
+    "contactEmail": "",
+    "status": "new",
+    "createdAt": "2026-10-01T09:15:32.104Z"
+  },
+  {
+    "id": 2,
+    "title": "Нет сил и желания что-либо делать",
+    "nickname": "Облако 42",
+    "category": "mood",
+    "format": "video",
+    "age": 24,
+    "anxietyLevel": 4,
+    "duration": 60,
+    "description": "Около месяца ничего не радует, перестал встречаться с друзьями. Хочу понять, что со мной происходит, и с чего начать.",
+    "contactEmail": "cloud42@example.com",
+    "status": "new",
+    "createdAt": "2026-10-03T14:02:11.587Z"
+  },
+  {
+    "id": 3,
+    "title": "Частые ссоры с родителями",
+    "nickname": "Северный ветер",
+    "category": "relations",
+    "format": "audio",
+    "age": 17,
+    "anxietyLevel": 5,
+    "duration": 30,
+    "description": "Почти каждый разговор с родителями заканчивается ссорой. Хотелось бы научиться спокойно объяснять свою позицию.",
+    "contactEmail": "",
+    "status": "new",
+    "createdAt": "2026-10-05T18:47:59.023Z"
+  },
+  {
+    "id": 4,
+    "title": "Стресс на учёбе",
+    "nickname": "Подушка",
+    "category": "anxiety",
+    "format": "video",
+    "age": 20,
+    "anxietyLevel": 10,
+    "duration": 45,
+    "description": "Практическая работа вызвали приступ тревожности и является триггер",
+    "contactEmail": "1@1.com",
+    "status": "new",
+    "createdAt": "2026-10-16T15:53:43.694Z"
+  }
+]

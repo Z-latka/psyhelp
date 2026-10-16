@@ -1,0 +1,14 @@
+<%- include('partials/header') %>
+
+<%# Имитация входа: переход с параметром ?auth=1 %>
+<section class="login">
+  <h1>Вход в сервис</h1>
+  <p class="muted">Для создания обращения нужен вход. Регистрация не требуется — вход анонимный.</p>
+  <p>Технически вход имитируется параметром <code>?auth=1</code>: middleware запоминает его в cookie.</p>
+  <div class="actions">
+    <a class="btn" href="/login?auth=1&next=<%= encodeURIComponent(next) %>">Войти анонимно</a>
+    <a class="btn btn-ghost" href="/">Продолжить как гость</a>
+  </div>
+</section>
+
+<%- include('partials/footer') %>

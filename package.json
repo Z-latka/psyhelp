@@ -1,0 +1,18 @@
+{
+  "name": "psyhelp-pz21",
+  "version": "1.0.0",
+  "description": "ПЗ №1. Middleware и шаблонизаторы (EJS). Сервис психологической поддержки: анонимные консультации и тесты",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "ejs": "^3.1.10",
+    "express": "^4.21.2"
+  },
+  "license": "MIT"
+}

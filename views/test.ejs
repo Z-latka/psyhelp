@@ -1,0 +1,48 @@
+<%- include('partials/header') %>
+
+<a class="back" href="/tests">← Ко всем тестам</a>
+
+<section class="page-head">
+  <div>
+    <h1><%= test.title %></h1>
+    <p class="muted"><%= test.description %></p>
+  </div>
+</section>
+
+<%# Результат теста после успешной проверки ответов %>
+<% if (result) { %>
+  <div class="result">
+    <div class="result-score"><%= result.score %> / <%= result.maxScore %></div>
+    <div>
+      <h2>Уровень: <%= result.level.toLowerCase() %></h2>
+      <p><%= result.text %></p>
+      <div class="actions">
+        <a class="btn" href="/add">Обратиться за консультацией</a>
+        <a class="btn btn-ghost" href="/tests/<%= test.slug %>">Пройти заново</a>
+      </div>
+    </div>
+  </div>
+<% } else { %>
+
+  <% if (Object.keys(errors).length) { %>
+    <div class="alert alert-error">Ответьте на все вопросы: пропущено <%= Object.keys(errors).length %>.</div>
+  <% } %>
+
+  <%# Вопросы теста %>
+  <form class="form" method="post" action="/tests/<%= test.slug %>" novalidate>
+    <% test.questions.forEach((q, i) => { %>
+      <fieldset class="field question <%= errors[i] ? 'invalid' : '' %>">
+        <legend><%= i + 1 %>. <%= q %></legend>
+        <div class="radios">
+          <% test.options.forEach((o) => { %>
+            <label class="radio"><input type="radio" name="q<%= i %>" value="<%= o.value %>" <%= answers[i] === o.value ? 'checked' : '' %>> <%= o.text %></label>
+          <% }) %>
+        </div>
+        <% if (errors[i]) { %><div class="error"><%= errors[i] %></div><% } %>
+      </fieldset>
+    <% }) %>
+    <div class="actions"><button class="btn" type="submit">Узнать результат</button></div>
+  </form>
+<% } %>
+
+<%- include('partials/footer') %>

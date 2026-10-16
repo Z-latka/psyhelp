@@ -1,0 +1,22 @@
+<%- include('partials/header') %>
+
+<section class="page-head">
+  <div>
+    <h1>Психологические тесты</h1>
+    <p class="muted">Короткие тесты для самопроверки. Результат не является диагнозом и нигде не сохраняется.</p>
+  </div>
+</section>
+
+<%# Список тестов %>
+<div class="cards">
+  <% tests.forEach((test) => { %>
+    <article class="card">
+      <h2><a href="/tests/<%= test.slug %>"><%= test.title %></a></h2>
+      <p class="excerpt"><%= test.description %></p>
+      <p class="muted"><%= test.questions.length %> <%= pluralize(test.questions.length, 'вопрос', 'вопроса', 'вопросов') %></p>
+      <a class="btn btn-small" href="/tests/<%= test.slug %>">Пройти тест</a>
+    </article>
+  <% }) %>
+</div>
+
+<%- include('partials/footer') %>

@@ -1,0 +1,15 @@
+<%- include('partials/header') %>
+
+<%# Страница 404: запрошенный адрес не найден %>
+<section class="error-page">
+  <div class="error-code">404</div>
+  <h1>Страница не найдена</h1>
+  <p class="muted">Адрес <code><%= url %></code> не существует или обращение было удалено.</p>
+  <div class="actions">
+    <a class="btn" href="/">На главную</a>
+    <a class="btn btn-ghost" href="/tests">Пройти тест</a>
+    <a class="btn btn-danger" href="/error-500">Открыть страницу 500</a>
+  </div>
+</section>
+
+<%- include('partials/footer') %>

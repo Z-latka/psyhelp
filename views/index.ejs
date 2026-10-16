@@ -1,0 +1,48 @@
+<%- include('partials/header') %>
+
+<%# Заголовок страницы и кнопка добавления %>
+<section class="page-head">
+  <div>
+    <h1>Анонимные консультации</h1>
+    <p class="muted">Всего <%= total %> <%= pluralize(total, 'обращение', 'обращения', 'обращений') %>. Имя и контакты не требуются — только псевдоним.</p>
+  </div>
+  <a class="btn" href="/add">+ Новое обращение</a>
+</section>
+
+<%# Фильтр по направлению %>
+<form class="filter" method="get" action="/">
+  <label for="category">Направление</label>
+  <select id="category" name="category" onchange="this.form.submit()">
+    <option value="">Все направления</option>
+    <% Object.entries(categories).forEach(([key, label]) => { %>
+      <option value="<%= key %>" <%= selectedCategory === key ? 'selected' : '' %>><%= label %></option>
+    <% }) %>
+  </select>
+  <noscript><button class="btn btn-small" type="submit">Показать</button></noscript>
+</form>
+
+<%# Список обращений: каждое с уникальным временем создания %>
+<% if (items.length === 0) { %>
+  <div class="empty">Обращений пока нет. <a href="/add">Создайте первое</a>.</div>
+<% } else { %>
+  <div class="cards">
+    <% items.forEach((item) => { %>
+      <article class="card">
+        <div class="card-top">
+          <span class="tag tag-<%= item.category %>"><%= categoryLabel(item.category) %></span>
+          <span class="level" title="Уровень тревоги">Тревога: <%= item.anxietyLevel %>/10</span>
+        </div>
+        <h2><a href="/item/<%= item.id %>"><%= item.title %></a></h2>
+        <p class="excerpt"><%= item.description.length > 140 ? item.description.slice(0, 140) + '…' : item.description %></p>
+        <dl class="meta">
+          <div><dt>Псевдоним</dt><dd><%= item.nickname %></dd></div>
+          <div><dt>Формат</dt><dd><%= formatLabel(item.format) %>, <%= item.duration %> мин</dd></div>
+          <div><dt>Создано</dt><dd class="mono"><%= formatDate(item.createdAt) %></dd></div>
+        </dl>
+        <a class="link-more" href="/item/<%= item.id %>">Подробнее →</a>
+      </article>
+    <% }) %>
+  </div>
+<% } %>
+
+<%- include('partials/footer') %>

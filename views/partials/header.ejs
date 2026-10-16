@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title><%= title %> — Тихая гавань</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+<%# Шапка сайта: навигация, статус пользователя, кнопки демонстрации ошибок %>
+<header class="site-header">
+  <div class="container header-inner">
+    <a class="logo" href="/">Тихая гавань<span>анонимная психологическая поддержка</span></a>
+    <nav class="nav">
+      <a href="/" class="<%= currentPath === '/' ? 'active' : '' %>">Обращения</a>
+      <a href="/add" class="<%= currentPath === '/add' ? 'active' : '' %>">Новое обращение</a>
+      <a href="/tests" class="<%= currentPath.startsWith('/tests') ? 'active' : '' %>">Тесты</a>
+    </nav>
+    <div class="user-box">
+      <span class="user-name"><%= user.name %></span>
+      <% if (user.isAuth) { %>
+        <a class="btn btn-small btn-ghost" href="/logout">Выйти</a>
+      <% } else { %>
+        <a class="btn btn-small" href="/login">Войти</a>
+      <% } %>
+    </div>
+  </div>
+</header>
+<main class="container">

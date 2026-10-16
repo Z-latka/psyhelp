@@ -1,0 +1,116 @@
+<%- include('partials/header') %>
+
+<a class="back" href="/">← Ко всем обращениям</a>
+
+<section class="page-head">
+  <div>
+    <h1>Новое обращение</h1>
+    <p class="muted">Заполните форму анонимно. Поля со звёздочкой обязательны.</p>
+  </div>
+</section>
+
+<%# Сводка ошибок валидации (сервер) %>
+<% const errorCount = Object.keys(errors).length; %>
+<% if (errorCount) { %>
+  <div class="alert alert-error" role="alert">
+    <strong>Форма не отправлена: <%= errorCount %> <%= pluralize(errorCount, 'ошибка', 'ошибки', 'ошибок') %>.</strong>
+    <ul>
+      <% Object.values(errors).forEach((msg) => { %><li><%= msg %></li><% }) %>
+    </ul>
+  </div>
+<% } %>
+
+<%# Форма: проверка выполняется на сервере, браузерная валидация отключена (novalidate) %>
+<form class="form" method="post" action="/add" novalidate>
+
+  <div class="field <%= errors.title ? 'invalid' : '' %>">
+    <label for="title">Тема обращения *</label>
+    <input id="title" name="title" type="text" value="<%= values.title %>"
+           maxlength="<%= limits.title.max %>" data-counter placeholder="Например: тревога перед экзаменами">
+    <div class="hint">От <%= limits.title.min %> до <%= limits.title.max %> символов <span class="counter"></span></div>
+    <% if (errors.title) { %><div class="error"><%= errors.title %></div><% } %>
+  </div>
+
+  <div class="row">
+    <div class="field <%= errors.nickname ? 'invalid' : '' %>">
+      <label for="nickname">Псевдоним *</label>
+      <input id="nickname" name="nickname" type="text" value="<%= values.nickname %>"
+             maxlength="<%= limits.nickname.max %>" data-counter placeholder="Не используйте настоящее имя">
+      <div class="hint">От <%= limits.nickname.min %> до <%= limits.nickname.max %> символов: буквы, цифры, пробел, «_», «-» <span class="counter"></span></div>
+      <% if (errors.nickname) { %><div class="error"><%= errors.nickname %></div><% } %>
+    </div>
+
+    <div class="field <%= errors.age ? 'invalid' : '' %>">
+      <label for="age">Возраст *</label>
+      <input id="age" name="age" type="text" inputmode="numeric" value="<%= values.age %>" maxlength="3">
+      <div class="hint">Целое число от <%= limits.age.min %> до <%= limits.age.max %></div>
+      <% if (errors.age) { %><div class="error"><%= errors.age %></div><% } %>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="field <%= errors.category ? 'invalid' : '' %>">
+      <label for="category">Направление *</label>
+      <select id="category" name="category">
+        <option value="">— выберите —</option>
+        <% Object.entries(categories).forEach(([key, label]) => { %>
+          <option value="<%= key %>" <%= values.category === key ? 'selected' : '' %>><%= label %></option>
+        <% }) %>
+      </select>
+      <% if (errors.category) { %><div class="error"><%= errors.category %></div><% } %>
+    </div>
+
+    <div class="field <%= errors.duration ? 'invalid' : '' %>">
+      <label for="duration">Длительность, мин *</label>
+      <input id="duration" name="duration" type="text" inputmode="numeric" value="<%= values.duration %>" maxlength="3">
+      <div class="hint">От <%= limits.duration.min %> до <%= limits.duration.max %>, кратно 15</div>
+      <% if (errors.duration) { %><div class="error"><%= errors.duration %></div><% } %>
+    </div>
+  </div>
+
+  <fieldset class="field <%= errors.format ? 'invalid' : '' %>">
+    <legend>Формат консультации *</legend>
+    <div class="radios">
+      <% Object.entries(formats).forEach(([key, label]) => { %>
+        <label class="radio"><input type="radio" name="format" value="<%= key %>" <%= values.format === key ? 'checked' : '' %>> <%= label %></label>
+      <% }) %>
+    </div>
+    <% if (errors.format) { %><div class="error"><%= errors.format %></div><% } %>
+  </fieldset>
+
+  <div class="field <%= errors.anxietyLevel ? 'invalid' : '' %>">
+    <label for="anxietyLevel">Уровень тревоги сейчас: <output id="anxietyOut"><%= values.anxietyLevel %></output> из 10 *</label>
+    <input id="anxietyLevel" name="anxietyLevel" type="range" min="<%= limits.anxietyLevel.min %>" max="<%= limits.anxietyLevel.max %>" step="1"
+           value="<%= values.anxietyLevel || 0 %>">
+    <div class="hint">0 — спокойно, 10 — очень сильная тревога</div>
+    <% if (errors.anxietyLevel) { %><div class="error"><%= errors.anxietyLevel %></div><% } %>
+  </div>
+
+  <div class="field <%= errors.description ? 'invalid' : '' %>">
+    <label for="description">Описание ситуации *</label>
+    <textarea id="description" name="description" rows="6" maxlength="<%= limits.description.max %>" data-counter
+              placeholder="Опишите, что вас беспокоит и как давно"><%= values.description %></textarea>
+    <div class="hint">От <%= limits.description.min %> до <%= limits.description.max %> символов <span class="counter"></span></div>
+    <% if (errors.description) { %><div class="error"><%= errors.description %></div><% } %>
+  </div>
+
+  <div class="field <%= errors.contactEmail ? 'invalid' : '' %>">
+    <label for="contactEmail">E-mail для ответа (необязательно)</label>
+    <input id="contactEmail" name="contactEmail" type="text" value="<%= values.contactEmail %>"
+           maxlength="<%= limits.contactEmail.max %>" placeholder="можно оставить пустым">
+    <% if (errors.contactEmail) { %><div class="error"><%= errors.contactEmail %></div><% } %>
+  </div>
+
+  <div class="field <%= errors.agree ? 'invalid' : '' %>">
+    <label class="checkbox"><input type="checkbox" name="agree" <%= values.agree === 'on' ? 'checked' : '' %>>
+      Я понимаю, что сервис не оказывает экстренную помощь *</label>
+    <% if (errors.agree) { %><div class="error"><%= errors.agree %></div><% } %>
+  </div>
+
+  <div class="actions">
+    <button class="btn" type="submit">Отправить обращение</button>
+    <a class="btn btn-ghost" href="/">Отмена</a>
+  </div>
+</form>
+
+<%- include('partials/footer') %>

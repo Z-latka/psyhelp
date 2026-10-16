@@ -1,0 +1,35 @@
+<%- include('partials/header') %>
+
+<a class="back" href="/">← Ко всем обращениям</a>
+
+<% if (created) { %>
+  <div class="alert alert-success">Обращение успешно создано и сохранено в файл.</div>
+<% } %>
+
+<%# Детальная информация об обращении %>
+<article class="detail">
+  <div class="card-top">
+    <span class="tag tag-<%= item.category %>"><%= categoryLabel(item.category) %></span>
+    <span class="status">Статус: ожидает специалиста</span>
+  </div>
+  <h1><%= item.title %></h1>
+
+  <dl class="detail-grid">
+    <div><dt>Номер обращения</dt><dd>#<%= item.id %></dd></div>
+    <div><dt>Псевдоним</dt><dd><%= item.nickname %></dd></div>
+    <div><dt>Возраст</dt><dd><%= item.age %></dd></div>
+    <div><dt>Формат</dt><dd><%= formatLabel(item.format) %></dd></div>
+    <div><dt>Длительность</dt><dd><%= item.duration %> мин</dd></div>
+    <div><dt>Уровень тревоги</dt><dd>
+      <span class="meter"><span style="width: <%= item.anxietyLevel * 10 %>%"></span></span>
+      <%= item.anxietyLevel %>/10
+    </dd></div>
+    <div><dt>Обратная связь</dt><dd><%= item.contactEmail || 'не указана (полная анонимность)' %></dd></div>
+    <div><dt>Время создания</dt><dd class="mono"><%= formatDate(item.createdAt) %></dd></div>
+  </dl>
+
+  <h2>Описание ситуации</h2>
+  <p class="description"><%= item.description %></p>
+</article>
+
+<%- include('partials/footer') %>
