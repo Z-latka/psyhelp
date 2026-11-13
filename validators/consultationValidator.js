@@ -4,7 +4,6 @@ const { CATEGORIES, FORMATS } = require('../utils/helpers');
 // Ограничения полей формы (используются и в валидаторе, и в шаблоне формы)
 const LIMITS = {
   title: { min: 5, max: 100 },
-  nickname: { min: 2, max: 30 },
   age: { min: 14, max: 100 },
   anxietyLevel: { min: 0, max: 10 },
   duration: { min: 15, max: 120 },
@@ -25,10 +24,11 @@ function runChain(value, checks) {
   return null;
 }
 
-// Валидация формы обращения: возвращает очищенные данные и ошибки по полям
-function validateConsultation(body, { isDuplicate } = {}) {
+// Валидация формы обращения: возвращает очищенные данные и ошибки по полям.
+// Псевдоним в форме не вводится — он берётся из учётной записи (req.user)
+function validateConsultation(body) {
   const raw = {};
-  ['title', 'nickname', 'category', 'format', 'age', 'anxietyLevel', 'duration', 'description', 'contactEmail', 'agree']
+  ['title', 'category', 'format', 'age', 'anxietyLevel', 'duration', 'description', 'contactEmail', 'agree']
     .forEach((key) => { raw[key] = rules.toStringValue(body[key]); });
 
   const errors = {};
@@ -37,18 +37,11 @@ function validateConsultation(body, { isDuplicate } = {}) {
   // Тема обращения
   errors.title = runChain(raw.title, [
     (v) => rules.required(v, 'Тема обращения'),
+    (v) => rules.maxRawLength(v, 'Тема обращения', L.title.max * 2),
+    (v) => rules.noControlChars(v, 'Тема обращения'),
     (v) => rules.length(singleLine(v), 'Тема обращения', L.title.min, L.title.max),
     (v) => rules.hasLetters(v, 'Тема обращения'),
     (v) => rules.noRepeatedChars(v, 'Тема обращения'),
-  ]);
-
-  // Анонимный псевдоним: буквы, цифры, пробел, «_» и «-»
-  errors.nickname = runChain(raw.nickname, [
-    (v) => rules.required(v, 'Псевдоним'),
-    (v) => rules.length(singleLine(v), 'Псевдоним', L.nickname.min, L.nickname.max),
-    (v) => (/^[\p{L}\d _-]+$/u.test(singleLine(v)) ? null
-      : 'Поле «Псевдоним» может содержать только буквы, цифры, пробел, «_» и «-».'),
-    (v) => rules.hasLetters(v, 'Псевдоним'),
   ]);
 
   // Направление и формат: только значения из справочников
@@ -79,6 +72,8 @@ function validateConsultation(body, { isDuplicate } = {}) {
   // Описание ситуации
   errors.description = runChain(raw.description, [
     (v) => rules.required(v, 'Описание ситуации'),
+    (v) => rules.maxRawLength(v, 'Описание ситуации', L.description.max * 2),
+    (v) => rules.noControlChars(v, 'Описание ситуации', { allowNewLines: true }),
     (v) => rules.length(multiLine(v), 'Описание ситуации', L.description.min, L.description.max),
     (v) => rules.hasLetters(v, 'Описание ситуации'),
     (v) => rules.noRepeatedChars(v, 'Описание ситуации'),
@@ -88,7 +83,9 @@ function validateConsultation(body, { isDuplicate } = {}) {
   errors.contactEmail = runChain(raw.contactEmail, [
     (v) => (v === null ? 'Поле «E-mail» содержит некорректное значение.' : null),
     (v) => (v.trim() === '' ? 'SKIP' : null),
+    (v) => rules.maxRawLength(v, 'E-mail', L.contactEmail.max * 2),
     (v) => rules.length(v.trim(), 'E-mail', 0, L.contactEmail.max),
+    (v) => rules.noControlChars(v, 'E-mail'),
     (v) => rules.email(v.trim(), 'E-mail'),
   ]);
   if (errors.contactEmail === 'SKIP') errors.contactEmail = null;
@@ -96,10 +93,12 @@ function validateConsultation(body, { isDuplicate } = {}) {
   // Согласие с правилами сервиса
   errors.agree = raw.agree === 'on' ? null : 'Необходимо подтвердить согласие с правилами сервиса.';
 
+  // Числовые поля «склеиваются» в форму обратно только в разумной длине
+  ['age', 'anxietyLevel', 'duration'].forEach((k) => { if (raw[k] && raw[k].length > 10) raw[k] = raw[k].slice(0, 10); });
+
   // Очищенные данные для сохранения
   const data = {
     title: singleLine(raw.title || ''),
-    nickname: singleLine(raw.nickname || ''),
     category: raw.category || '',
     format: raw.format || '',
     age: Number((raw.age || '').trim()),
@@ -109,18 +108,16 @@ function validateConsultation(body, { isDuplicate } = {}) {
     contactEmail: (raw.contactEmail || '').trim().toLowerCase(),
   };
 
-  // Дубликат: такой же псевдоним и тема уже есть
-  if (!errors.title && !errors.nickname && isDuplicate && isDuplicate(data.nickname, data.title)) {
-    errors.title = 'Обращение с такой темой от этого псевдонима уже существует.';
-  }
-
   Object.keys(errors).forEach((k) => { if (!errors[k]) delete errors[k]; });
 
   return {
     isValid: Object.keys(errors).length === 0,
     errors,
     data,
-    values: Object.fromEntries(Object.entries(raw).map(([k, v]) => [k, v || ''])),
+    // Значения для повторного вывода в форму: без служебных символов (\0 и т.п.) и не длиннее лимита
+    values: Object.fromEntries(Object.entries(raw).map(([k, v]) => [
+      k, (v || '').replace(/[^\P{Cc}\n\t]/gu, '').slice(0, 2000),
+    ])),
   };
 }
 

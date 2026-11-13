@@ -1,68 +1,58 @@
-const fs = require('fs');
 const path = require('path');
+const { createStore } = require('../utils/jsonStore');
 
-const DATA_FILE = path.join(__dirname, '..', 'data', 'consultations.json');
+// Обращения хранятся в массиве в памяти; источник и резервная копия — data/consultations.json
+const store = createStore({
+  file: path.join(__dirname, '..', 'data', 'consultations.json'),
+  name: 'обращения',
+  isValidRecord: (c) => c && typeof c === 'object'
+    && Number.isInteger(c.id) && typeof c.title === 'string' && typeof c.nickname === 'string'
+    && typeof c.description === 'string' && typeof c.createdAt === 'string',
+});
 
-// Массив обращений в памяти; источник данных — JSON-файл
-let consultations = [];
+const byNewest = (a, b) => new Date(b.createdAt) - new Date(a.createdAt);
 
-// Загрузка данных из файла при старте (файла нет — создаём пустой)
-function load() {
-  if (!fs.existsSync(DATA_FILE)) {
-    fs.mkdirSync(path.dirname(DATA_FILE), { recursive: true });
-    fs.writeFileSync(DATA_FILE, '[]', 'utf8');
-  }
-  const raw = fs.readFileSync(DATA_FILE, 'utf8');
-  const parsed = JSON.parse(raw || '[]');
-  if (!Array.isArray(parsed)) throw new Error('Файл данных должен содержать массив');
-  consultations = parsed;
+// Список (новые сверху)
+async function getAll() {
+  return (await store.all()).sort(byNewest);
 }
 
-// Атомарная запись: сначала во временный файл, затем переименование
-async function save() {
-  const tmp = `${DATA_FILE}.tmp`;
-  await fs.promises.writeFile(tmp, JSON.stringify(consultations, null, 2), 'utf8');
-  await fs.promises.rename(tmp, DATA_FILE);
+// Обращения конкретного пользователя
+async function getByOwner(ownerId) {
+  return (await store.all()).filter((c) => c.ownerId === ownerId).sort(byNewest);
 }
 
-// Чтение: список (новые сверху) и поиск по id
-function getAll() {
-  return [...consultations].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+// Поиск по id
+async function getById(id) {
+  return (await store.all()).find((c) => c.id === id) || null;
 }
 
-function getById(id) {
-  return consultations.find((c) => c.id === id) || null;
-}
-
-// Проверка дубликата: тот же псевдоним и та же тема обращения
-function isDuplicate(nickname, title) {
-  const n = nickname.toLowerCase();
-  const t = title.toLowerCase();
-  return consultations.some((c) => c.nickname.toLowerCase() === n && c.title.toLowerCase() === t);
+// Псевдонимы авторов старых обращений (считаются занятыми при регистрации)
+async function getNicknames() {
+  return (await store.all()).map((c) => c.nickname);
 }
 
 // Уникальное время создания: при совпадении миллисекунд сдвигаем на 1 мс
-function uniqueTimestamp() {
+function uniqueTimestamp(list) {
   let ts = Date.now();
-  const last = consultations.reduce((max, c) => Math.max(max, new Date(c.createdAt).getTime()), 0);
+  const last = list.reduce((max, c) => Math.max(max, new Date(c.createdAt).getTime() || 0), 0);
   if (ts <= last) ts = last + 1;
   return new Date(ts).toISOString();
 }
 
-// Создание записи и сохранение в файл
-async function create(data) {
-  const id = consultations.reduce((max, c) => Math.max(max, c.id), 0) + 1;
-  const item = { id, ...data, status: 'new', createdAt: uniqueTimestamp() };
-  consultations.push(item);
-  try {
-    await save();
-  } catch (err) {
-    consultations.pop();
-    throw err;
-  }
-  return item;
+// Создание: дубликат (тот же автор и та же тема) не допускается
+function create(data) {
+  return store.transact((list) => {
+    const t = data.title.toLowerCase();
+    if (list.some((c) => c.ownerId === data.ownerId && c.title.toLowerCase() === t)) {
+      return { result: { duplicate: true } };
+    }
+    const id = list.reduce((max, c) => Math.max(max, c.id), 0) + 1;
+    const item = { id, ...data, status: 'new', createdAt: uniqueTimestamp(list) };
+    return { records: [...list, item], result: { item } };
+  });
 }
 
-load();
+store.init();
 
-module.exports = { getAll, getById, create, isDuplicate };
+module.exports = { getAll, getByOwner, getById, getNicknames, create, load: store.all };

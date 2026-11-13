@@ -1,28 +1,22 @@
 <%- include('partials/header') %>
 
-<%# Страница 500: сведения об ошибке; стек выводится только в режиме разработки %>
+<%# Страница ошибки: пользовательское описание без системных сообщений и стека %>
 <section class="error-page">
   <div class="error-code"><%= status %></div>
-  <h1><%= status === 500 ? 'Внутренняя ошибка сервера' : 'Ошибка запроса' %></h1>
-  <p class="muted">Запрос не удалось обработать. Ошибка записана в журнал сервера.</p>
+  <h1><%= errorTitle %></h1>
+  <p class="lead"><%= message %></p>
+  <% if (hint) { %><p class="muted"><%= hint %></p><% } %>
 
   <dl class="detail-grid error-info">
     <div><dt>Код ошибки</dt><dd class="mono">#<%= errorId %></dd></div>
     <div><dt>Время</dt><dd class="mono"><%= formatDate(time) %></dd></div>
     <div><dt>Запрос</dt><dd class="mono"><%= method %> <%= url %></dd></div>
-    <div><dt>Сообщение</dt><dd><%= message %></dd></div>
+    <div><dt>Журнал ошибок</dt><dd><%= logged ? 'ошибка записана в logs/errors.log' : 'журнал недоступен, ошибка выведена в консоль сервера' %></dd></div>
   </dl>
-
-  <% if (stack) { %>
-    <details class="stack">
-      <summary>Стек вызовов (только в режиме разработки)</summary>
-      <pre><%= stack %></pre>
-    </details>
-  <% } %>
 
   <div class="actions">
     <a class="btn" href="/">На главную</a>
-    <a class="btn btn-ghost" href="/no-such-page">Открыть страницу 404</a>
+    <% if (method === 'GET') { %><a class="btn btn-ghost" href="<%= url %>">Повторить запрос</a><% } %>
   </div>
 </section>
 

@@ -141,3 +141,8 @@ input[type="range"] { width: 100%; accent-color: var(--accent); }
   h1 { font-size: 24px; }
   .error-code { font-size: 64px; }
 }
+.error-page .lead { font-size: 1.1rem; margin: 6px 0 8px; }
+.error-page .lead { font-size: 1.1rem; margin: 6px 0 8px; }
+.auth-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 18px; align-items: start; }
+.auth-grid .form h2 { margin: 0; font-size: 1.15rem; }
+.access-code { font-size: 2rem; letter-spacing: .15em; padding: 14px 18px; border: 2px dashed var(--muted); border-radius: 10px; text-align: center; user-select: all; }

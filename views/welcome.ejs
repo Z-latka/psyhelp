@@ -1,0 +1,18 @@
+<%- include('partials/header') %>
+
+<%# Однократный показ кода доступа после регистрации %>
+<section class="login">
+  <h1>Псевдоним «<%= user.name %>» закреплён за вами</h1>
+  <p>Ваш код доступа:</p>
+  <div class="access-code mono"><%= code %></div>
+  <div class="alert alert-error">
+    Сохраните код — он показывается только один раз и нигде не хранится в открытом виде.
+    Без него войти под этим псевдонимом с другого устройства или после выхода будет невозможно.
+  </div>
+  <div class="actions">
+    <a class="btn" href="<%= next %>">Продолжить</a>
+    <a class="btn btn-ghost" href="/add">Создать обращение</a>
+  </div>
+</section>
+
+<%- include('partials/footer') %>

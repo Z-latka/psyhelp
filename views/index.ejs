@@ -3,14 +3,14 @@
 <%# Заголовок страницы и кнопка добавления %>
 <section class="page-head">
   <div>
-    <h1>Анонимные консультации</h1>
+    <h1><%= heading %></h1>
     <p class="muted">Всего <%= total %> <%= pluralize(total, 'обращение', 'обращения', 'обращений') %>. Имя и контакты не требуются — только псевдоним.</p>
   </div>
   <a class="btn" href="/add">+ Новое обращение</a>
 </section>
 
 <%# Фильтр по направлению %>
-<form class="filter" method="get" action="/">
+<form class="filter" method="get" action="<%= filterAction %>">
   <label for="category">Направление</label>
   <select id="category" name="category" onchange="this.form.submit()">
     <option value="">Все направления</option>

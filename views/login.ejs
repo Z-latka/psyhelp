@@ -1,14 +1,49 @@
 <%- include('partials/header') %>
 
-<%# Имитация входа: переход с параметром ?auth=1 %>
-<section class="login">
-  <h1>Вход в сервис</h1>
-  <p class="muted">Для создания обращения нужен вход. Регистрация не требуется — вход анонимный.</p>
-  <p>Технически вход имитируется параметром <code>?auth=1</code>: middleware запоминает его в cookie.</p>
-  <div class="actions">
-    <a class="btn" href="/login?auth=1&next=<%= encodeURIComponent(next) %>">Войти анонимно</a>
-    <a class="btn btn-ghost" href="/">Продолжить как гость</a>
+<%# Вход: псевдоним + код доступа; регистрация: новый уникальный псевдоним %>
+<section class="page-head">
+  <div>
+    <h1>Вход в сервис</h1>
+    <p class="muted">Без имени, телефона и пароля: только уникальный псевдоним и секретный код доступа.</p>
   </div>
 </section>
+
+<div class="auth-grid">
+  <form class="form" method="post" action="/login" novalidate>
+    <h2>Уже есть псевдоним</h2>
+    <input type="hidden" name="next" value="<%= next %>">
+
+    <div class="field <%= login.errors.nickname ? 'invalid' : '' %>">
+      <label for="login-nickname">Псевдоним *</label>
+      <input id="login-nickname" name="nickname" type="text" value="<%= login.values.nickname || '' %>"
+             maxlength="<%= limits.max %>" autocomplete="username">
+      <% if (login.errors.nickname) { %><div class="error"><%= login.errors.nickname %></div><% } %>
+    </div>
+
+    <div class="field <%= login.errors.code ? 'invalid' : '' %>">
+      <label for="login-code">Код доступа *</label>
+      <input id="login-code" name="code" type="password" maxlength="9" placeholder="XXXX-XXXX" autocomplete="current-password">
+      <div class="hint">Код выдаётся один раз при получении псевдонима</div>
+      <% if (login.errors.code) { %><div class="error"><%= login.errors.code %></div><% } %>
+    </div>
+
+    <div class="actions"><button class="btn" type="submit">Войти</button></div>
+  </form>
+
+  <form class="form" method="post" action="/register" novalidate>
+    <h2>Впервые здесь</h2>
+    <input type="hidden" name="next" value="<%= next %>">
+
+    <div class="field <%= register.errors.nickname ? 'invalid' : '' %>">
+      <label for="reg-nickname">Придумайте псевдоним *</label>
+      <input id="reg-nickname" name="nickname" type="text" value="<%= register.values.nickname || '' %>"
+             maxlength="<%= limits.max %>" data-counter placeholder="Не используйте настоящее имя">
+      <div class="hint">От <%= limits.min %> до <%= limits.max %> символов: буквы одного алфавита, цифры, пробел, «_», «-». Псевдоним должен быть уникальным. <span class="counter"></span></div>
+      <% if (register.errors.nickname) { %><div class="error"><%= register.errors.nickname %></div><% } %>
+    </div>
+
+    <div class="actions"><button class="btn btn-ghost" type="submit">Получить псевдоним и код</button></div>
+  </form>
+</div>
 
 <%- include('partials/footer') %>

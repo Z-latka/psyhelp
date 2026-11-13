@@ -37,9 +37,26 @@ function noRepeatedChars(value, label, limit = 5) {
   return re.test(value) ? `Поле «${label}» содержит слишком много одинаковых символов подряд.` : null;
 }
 
+// Запрет управляющих и невидимых символов (нулевой байт, zero-width space, RTL-override и т.п.).
+// allowNewLines — для многострочного текста разрешены переводы строк и табуляция
+function noControlChars(value, label, { allowNewLines = false } = {}) {
+  const cleaned = allowNewLines ? value.replace(/[\r\n\t]/g, '') : value;
+  return /[\p{Cc}\p{Cf}\p{Co}\p{Cn}\u2028\u2029]/u.test(cleaned)
+    ? `Поле «${label}» содержит недопустимые (служебные или невидимые) символы.`
+    : null;
+}
+
+// Защита от вставки огромного текста: проверяется до остальных правил
+function maxRawLength(value, label, max) {
+  return value.length > max ? `Поле «${label}» слишком длинное: максимум ${max} символов.` : null;
+}
+
 // Целое неотрицательное число в заданном диапазоне
 function integerInRange(value, label, min, max) {
   const v = value.trim();
+  // Огромные числа (вставка «99999999999999999999…») отсекаются по длине до преобразования
+  if (v.length > String(max).length + 2) return `Поле «${label}»: слишком длинное значение, допустимо от ${min} до ${max}.`;
+  if (/^\d+e[+-]?\d+$/i.test(v)) return `Поле «${label}» должно быть записано обычными цифрами.`;
   if (/^[+-]?\d+[.,]\d+$/.test(v)) return `Поле «${label}» должно быть целым числом.`;
   if (/^-\d+$/.test(v)) return `Поле «${label}» не может быть отрицательным.`;
   if (!/^\d+$/.test(v)) return `Поле «${label}» должно содержать только цифры.`;
@@ -59,4 +76,6 @@ function email(value, label) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(value) ? null : `Поле «${label}» должно содержать корректный e-mail.`;
 }
 
-module.exports = { toStringValue, required, length, hasLetters, noRepeatedChars, integerInRange, oneOf, email };
+module.exports = {
+  toStringValue, required, length, hasLetters, noRepeatedChars, noControlChars, maxRawLength, integerInRange, oneOf, email,
+};

@@ -32,12 +32,11 @@
   </div>
 
   <div class="row">
-    <div class="field <%= errors.nickname ? 'invalid' : '' %>">
-      <label for="nickname">Псевдоним *</label>
-      <input id="nickname" name="nickname" type="text" value="<%= values.nickname %>"
-             maxlength="<%= limits.nickname.max %>" data-counter placeholder="Не используйте настоящее имя">
-      <div class="hint">От <%= limits.nickname.min %> до <%= limits.nickname.max %> символов: буквы, цифры, пробел, «_», «-» <span class="counter"></span></div>
-      <% if (errors.nickname) { %><div class="error"><%= errors.nickname %></div><% } %>
+    <%# Псевдоним не вводится: берётся из учётной записи, подменить его нельзя %>
+    <div class="field">
+      <label for="nickname">Псевдоним</label>
+      <input id="nickname" type="text" value="<%= user.name %>" disabled>
+      <div class="hint">Из вашей учётной записи</div>
     </div>
 
     <div class="field <%= errors.age ? 'invalid' : '' %>">

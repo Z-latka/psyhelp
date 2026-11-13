@@ -10,7 +10,7 @@
 <article class="detail">
   <div class="card-top">
     <span class="tag tag-<%= item.category %>"><%= categoryLabel(item.category) %></span>
-    <span class="status">Статус: ожидает специалиста</span>
+    <span class="status"><%= isOwner ? 'Ваше обращение · ' : '' %>Статус: ожидает специалиста</span>
   </div>
   <h1><%= item.title %></h1>
 
@@ -24,7 +24,11 @@
       <span class="meter"><span style="width: <%= item.anxietyLevel * 10 %>%"></span></span>
       <%= item.anxietyLevel %>/10
     </dd></div>
-    <div><dt>Обратная связь</dt><dd><%= item.contactEmail || 'не указана (полная анонимность)' %></dd></div>
+    <%# E-mail — личные данные: показываются только автору обращения %>
+    <div><dt>Обратная связь</dt><dd>
+      <% if (isOwner) { %><%= item.contactEmail || 'не указана (полная анонимность)' %>
+      <% } else { %><%= item.contactEmail ? 'указана (видна только автору)' : 'не указана' %><% } %>
+    </dd></div>
     <div><dt>Время создания</dt><dd class="mono"><%= formatDate(item.createdAt) %></dd></div>
   </dl>
 

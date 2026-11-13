@@ -7,13 +7,14 @@
   <link rel="stylesheet" href="/css/style.css">
 </head>
 <body>
-<%# Шапка сайта: навигация, статус пользователя, кнопки демонстрации ошибок %>
+<%# Шапка сайта: навигация, статус пользователя %>
 <header class="site-header">
   <div class="container header-inner">
     <a class="logo" href="/">Тихая гавань<span>анонимная психологическая поддержка</span></a>
     <nav class="nav">
       <a href="/" class="<%= currentPath === '/' ? 'active' : '' %>">Обращения</a>
       <a href="/add" class="<%= currentPath === '/add' ? 'active' : '' %>">Новое обращение</a>
+      <% if (user.isAuth) { %><a href="/my" class="<%= currentPath === '/my' ? 'active' : '' %>">Мои обращения</a><% } %>
       <a href="/tests" class="<%= currentPath.startsWith('/tests') ? 'active' : '' %>">Тесты</a>
     </nav>
     <div class="user-box">

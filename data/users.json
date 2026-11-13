@@ -1,0 +1,10 @@
+[
+  {
+    "id": 1,
+    "nickname": "хмарка",
+    "key": "хмарка",
+    "salt": "1d8a8c55fd5b704affcf18cd4a7e258f",
+    "codeHash": "3bad9e3d878990e0003a4d84325c5e2bafef1fd297362e9bd0a7fbea185f9c28",
+    "createdAt": "2026-11-12T21:23:30.388Z"
+  }
+]
