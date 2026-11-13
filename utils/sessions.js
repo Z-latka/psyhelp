@@ -3,8 +3,10 @@ const crypto = require('crypto');
 // Сессии в памяти: случайный токен в cookie → данные пользователя.
 // В cookie нет ни псевдонима, ни id — подделать вход, изменив cookie, нельзя.
 const SESSION_COOKIE = 'sid';
-const TTL_MS = 7 * 24 * 60 * 60 * 1000; // 7 дней
-const MAX_SESSIONS = 5000;              // защита памяти от массового создания сессий
+const { security } = require('../config/limits');
+
+const TTL_MS = security.sessionTtlDays * 24 * 60 * 60 * 1000; // срок жизни сессии
+const MAX_SESSIONS = security.maxSessions;                     // защита памяти от массового создания сессий
 const TOKEN_RE = /^[a-f0-9]{64}$/;
 
 const sessions = new Map();

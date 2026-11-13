@@ -5,10 +5,12 @@ const { createLimiter } = require('../utils/rateLimit');
 const { validateNickname, validateCode, NICKNAME } = require('../validators/authValidator');
 const { safeNext } = require('../middleware/auth');
 const { AppError } = require('../utils/AppError');
+const { security } = require('../config/limits');
 
-// Защита от подбора: 10 неудачных входов за 15 минут с одного IP; регистраций — 5 в час
-const loginLimiter = createLimiter({ max: 10, windowMs: 15 * 60 * 1000 });
-const registerLimiter = createLimiter({ max: 5, windowMs: 60 * 60 * 1000 });
+// Защита от подбора кода и массовой регистрации (лимиты — в config/limits.json)
+const MINUTE = 60 * 1000;
+const loginLimiter = createLimiter({ max: security.loginAttempts.max, windowMs: security.loginAttempts.windowMinutes * MINUTE });
+const registerLimiter = createLimiter({ max: security.registrations.max, windowMs: security.registrations.windowMinutes * MINUTE });
 
 const cookieOptions = { httpOnly: true, sameSite: 'lax', maxAge: sessions.TTL_MS };
 

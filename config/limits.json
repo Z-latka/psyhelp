@@ -1,0 +1,27 @@
+{
+  "consultation": {
+    "title": { "min": 5, "max": 100 },
+    "age": { "min": 14, "max": 100 },
+    "anxietyLevel": { "min": 0, "max": 10 },
+    "duration": { "min": 15, "max": 120, "step": 15 },
+    "description": { "min": 20, "max": 1000 },
+    "contactEmail": { "min": 0, "max": 100 },
+    "maxRepeatedChars": 5
+  },
+  "account": {
+    "nickname": { "min": 3, "max": 30 },
+    "maxRepeatedChars": 3
+  },
+  "request": {
+    "bodyLimitKb": 20,
+    "maxFormFields": 30,
+    "maxCookieHeader": 4096,
+    "maxUrlInLog": 300
+  },
+  "security": {
+    "loginAttempts": { "max": 10, "windowMinutes": 15 },
+    "registrations": { "max": 5, "windowMinutes": 60 },
+    "sessionTtlDays": 7,
+    "maxSessions": 5000
+  }
+}

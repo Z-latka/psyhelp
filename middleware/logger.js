@@ -1,7 +1,7 @@
 const { appendLine, REQUEST_LOG } = require('../utils/fileLog');
 
 // Обрезка длинных URL, чтобы огромный адрес не раздувал журнал
-const MAX_URL_IN_LOG = 300;
+const MAX_URL_IN_LOG = require('../config/limits').request.maxUrlInLog;
 const shortUrl = (url) => (url.length > MAX_URL_IN_LOG ? `${url.slice(0, MAX_URL_IN_LOG)}…(${url.length} симв.)` : url);
 
 // Логирующее middleware: метод, URL и время запроса пишутся в консоль и в файл logs/requests.log.

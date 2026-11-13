@@ -25,7 +25,8 @@ body {
   min-height: 100vh;
 }
 
-main { flex: 1; padding-top: 28px; padding-bottom: 48px; }
+main { flex: 1; }
+main.container { padding-top: 28px; padding-bottom: 48px; }
 .container { max-width: 1040px; margin: 0 auto; padding: 0 16px; }
 a { color: var(--accent); }
 h1 { font-size: 28px; margin: 0 0 6px; }
@@ -35,7 +36,7 @@ h2 { font-size: 19px; }
 code { background: var(--accent-soft); padding: 1px 6px; border-radius: 6px; }
 
 /* Шапка и подвал */
-.site-header { background: var(--surface); border-bottom: 1px solid var(--line); }
+.site-header { background: var(--surface); border-bottom: 1px solid var(--line); position: sticky; top: 0; z-index: 100; box-shadow: 0 1px 6px rgba(0, 0, 0, .06); }
 .header-inner { display: flex; align-items: center; gap: 24px; padding-top: 14px; padding-bottom: 14px; flex-wrap: wrap; }
 .logo { font-weight: 700; font-size: 20px; color: var(--accent-dark); text-decoration: none; display: flex; flex-direction: column; line-height: 1.2; }
 .logo span { font-weight: 400; font-size: 12px; color: var(--muted); }
@@ -141,7 +142,6 @@ input[type="range"] { width: 100%; accent-color: var(--accent); }
   h1 { font-size: 24px; }
   .error-code { font-size: 64px; }
 }
-.error-page .lead { font-size: 1.1rem; margin: 6px 0 8px; }
 .error-page .lead { font-size: 1.1rem; margin: 6px 0 8px; }
 .auth-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 18px; align-items: start; }
 .auth-grid .form h2 { margin: 0; font-size: 1.15rem; }

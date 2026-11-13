@@ -1,7 +1,9 @@
 const rules = require('./rules');
 const { normalizeCode, CODE_ALPHABET } = require('../models/userModel');
 
-const NICKNAME = { min: 3, max: 30 };
+const { account } = require('../config/limits');
+
+const NICKNAME = account.nickname;
 const singleLine = (s) => s.trim().replace(/\s+/g, ' ');
 
 function runChain(value, checks) {
@@ -25,7 +27,7 @@ function validateNickname(rawValue) {
     (v) => (/^[\p{L}\d _-]+$/u.test(singleLine(v)) ? null
       : `Поле «${label}» может содержать только буквы, цифры, пробел, «_» и «-».`),
     (v) => rules.hasLetters(v, label),
-    (v) => rules.noRepeatedChars(v, label, 3),
+    (v) => rules.noRepeatedChars(v, label, account.maxRepeatedChars),
     // Смешение алфавитов в одном слове — частый способ выдать себя за другого («Tихий»)
     (v) => (/\p{Script=Latin}/u.test(v) && /\p{Script=Cyrillic}/u.test(v)
       ? `Поле «${label}» не должно смешивать русские и латинские буквы.` : null),

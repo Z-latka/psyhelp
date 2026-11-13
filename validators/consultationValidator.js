@@ -1,15 +1,8 @@
 const rules = require('./rules');
 const { CATEGORIES, FORMATS } = require('../utils/helpers');
 
-// Ограничения полей формы (используются и в валидаторе, и в шаблоне формы)
-const LIMITS = {
-  title: { min: 5, max: 100 },
-  age: { min: 14, max: 100 },
-  anxietyLevel: { min: 0, max: 10 },
-  duration: { min: 15, max: 120 },
-  description: { min: 20, max: 1000 },
-  contactEmail: { max: 100 },
-};
+// Ограничения полей формы берутся из config/limits.json (используются и в валидаторе, и в шаблоне формы)
+const LIMITS = require('../config/limits').consultation;
 
 // Нормализация строк: обрезка краёв, схлопывание повторных пробелов
 const singleLine = (s) => s.trim().replace(/\s+/g, ' ');
@@ -41,7 +34,7 @@ function validateConsultation(body) {
     (v) => rules.noControlChars(v, 'Тема обращения'),
     (v) => rules.length(singleLine(v), 'Тема обращения', L.title.min, L.title.max),
     (v) => rules.hasLetters(v, 'Тема обращения'),
-    (v) => rules.noRepeatedChars(v, 'Тема обращения'),
+    (v) => rules.noRepeatedChars(v, 'Тема обращения', L.maxRepeatedChars),
   ]);
 
   // Направление и формат: только значения из справочников
@@ -66,7 +59,7 @@ function validateConsultation(body) {
   errors.duration = runChain(raw.duration, [
     (v) => rules.required(v, 'Длительность'),
     (v) => rules.integerInRange(v, 'Длительность', L.duration.min, L.duration.max),
-    (v) => (Number(v.trim()) % 15 === 0 ? null : 'Поле «Длительность» должно быть кратно 15 минутам.'),
+    (v) => (Number(v.trim()) % L.duration.step === 0 ? null : `Поле «Длительность» должно быть кратно ${L.duration.step} минутам.`),
   ]);
 
   // Описание ситуации
@@ -76,7 +69,7 @@ function validateConsultation(body) {
     (v) => rules.noControlChars(v, 'Описание ситуации', { allowNewLines: true }),
     (v) => rules.length(multiLine(v), 'Описание ситуации', L.description.min, L.description.max),
     (v) => rules.hasLetters(v, 'Описание ситуации'),
-    (v) => rules.noRepeatedChars(v, 'Описание ситуации'),
+    (v) => rules.noRepeatedChars(v, 'Описание ситуации', L.maxRepeatedChars),
   ]);
 
   // E-mail необязателен, но если введён — проверяется формат и длина

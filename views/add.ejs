@@ -62,7 +62,7 @@
     <div class="field <%= errors.duration ? 'invalid' : '' %>">
       <label for="duration">Длительность, мин *</label>
       <input id="duration" name="duration" type="text" inputmode="numeric" value="<%= values.duration %>" maxlength="3">
-      <div class="hint">От <%= limits.duration.min %> до <%= limits.duration.max %>, кратно 15</div>
+      <div class="hint">От <%= limits.duration.min %> до <%= limits.duration.max %>, кратно <%= limits.duration.step %></div>
       <% if (errors.duration) { %><div class="error"><%= errors.duration %></div><% } %>
     </div>
   </div>

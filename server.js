@@ -1,6 +1,9 @@
 const path = require('path');
 const express = require('express');
 
+// Ограничения из config/limits.json загружаются первыми: при ошибке в файле сервер не стартует
+const limits = require('./config/limits');
+
 const logger = require('./middleware/logger');
 const { authenticate } = require('./middleware/auth');
 const viewLocals = require('./middleware/viewLocals');
@@ -27,9 +30,10 @@ app.use(viewLocals);
 // Логирование запросов в консоль и в файл logs/requests.log
 app.use(logger);
 
-// Разбор тела формы: ограничение размера (20 КБ) и числа полей (защита от вставки огромных данных)
-app.use(express.urlencoded({ extended: false, limit: '20kb', parameterLimit: 30 }));
-app.use(express.json({ limit: '20kb' }));
+// Разбор тела формы: ограничение размера и числа полей (защита от вставки огромных данных)
+const bodyLimit = `${limits.request.bodyLimitKb}kb`;
+app.use(express.urlencoded({ extended: false, limit: bodyLimit, parameterLimit: limits.request.maxFormFields }));
+app.use(express.json({ limit: bodyLimit }));
 
 // Маршруты приложения
 app.use('/', routes);

@@ -2,6 +2,7 @@ const crypto = require('crypto');
 const { AppError } = require('../utils/AppError');
 const { appendLineSafe, ERROR_LOG } = require('../utils/fileLog');
 const helpers = require('../utils/helpers');
+const { request } = require('../config/limits');
 
 // 404: ни один маршрут не обработал запрос
 function notFoundHandler(req, res) {
@@ -19,7 +20,7 @@ function toUserError(err) {
       return new AppError({
         status: 413,
         title: 'Слишком большой объём данных',
-        message: 'Отправленная форма превышает допустимый размер (20 КБ).',
+        message: `Отправленная форма превышает допустимый размер (${request.bodyLimitKb} КБ).`,
         hint: 'Сократите текст в полях формы и отправьте её снова.',
         cause: err,
       });

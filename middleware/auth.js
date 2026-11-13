@@ -1,6 +1,6 @@
 const sessions = require('../utils/sessions');
 
-const MAX_COOKIE_HEADER = 4096;
+const MAX_COOKIE_HEADER = require('../config/limits').request.maxCookieHeader;
 
 // Разбор заголовка Cookie без сторонних библиотек.
 // Битая кодировка (%E0%A4%A) или слишком длинный заголовок не должны ронять запрос
